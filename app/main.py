@@ -1,15 +1,25 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+from sentence_transformers import SentenceTransformer
+
+def read_text_file(path: str):
+    with open(path, 'r') as file:
+        return file.read()
 
 # Function to compute cosine similarity between two vectors
-def compute_similarity(vec1, vec2):
-    return cosine_similarity([vec1], [vec2])[0][0]
+def compute_similarity(text1, text2, model):
+    vec1 = model.encode(text1)
+    vec2 = model.encode(text2)
+    return cosine_similarity([vec1], [vec2])[0][0] # Return the similarity score
 
 def main():
-    resume_vector = np.array([0.1, 0.2, 0.3, 0.4])
-    jd_vector = np.array([0.2, 0.1, 0.4, 0.3])
+    model = SentenceTransformer('all-MiniLM-L6-v2')  # Load a pre-trained model for encoding
+    
+    resume_text = "I specialize in frontend development using React and CSS."
 
-    score = compute_similarity(resume_vector, jd_vector)    
+    jd_text = read_text_file("data/job_descriptions/ml_engineer.txt")
+
+    score = compute_similarity(resume_text, jd_text, model)    
     print(f"Cosine Similarity Score: {score:.2f}")
 
 if __name__ == "__main__":

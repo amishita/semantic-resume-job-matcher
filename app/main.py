@@ -1,10 +1,12 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from sentence_transformers import SentenceTransformer
+import os
 
-def read_text_file(path: str):
-    with open(path, 'r') as file:
-        return file.read()
+resumes = os.listdir("data/resumes")
+job_descriptions = os.listdir("data/job_descriptions")
+
+from utils import read_pdf_file, extract_sections
 
 # Function to compute cosine similarity between two vectors
 def compute_similarity(text1, text2, model):
@@ -15,12 +17,21 @@ def compute_similarity(text1, text2, model):
 def main():
     model = SentenceTransformer('all-MiniLM-L6-v2')  # Load a pre-trained model for encoding
     
-    resume_text = "I specialize in frontend development using React and CSS."
+    resume_text = read_pdf_file("data/resumes/C1061.pdf")
+    print(extract_sections(resume_text))
 
-    jd_text = read_text_file("data/job_descriptions/ml_engineer.txt")
+    jd_text = read_pdf_file("data/job_descriptions/Volkswagen_JD.pdf")
 
-    score = compute_similarity(resume_text, jd_text, model)    
-    print(f"Cosine Similarity Score: {score:.2f}")
+    for resume in resumes:
+        resume_text = read_pdf_file(f"data/resumes/{resume}")
+    
+        '''
+        for jd in job_descriptions:
+            jd_text = read_pdf_file(f"data/job_descriptions/{jd}")
+
+            score = compute_similarity(resume_text, jd_text, model)    
+            print(f"Cosine Similarity Score of {resume} and {jd}: {score:.2f}")
+        '''
 
 if __name__ == "__main__":
     main()
